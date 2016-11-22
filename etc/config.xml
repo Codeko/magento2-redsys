@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2016 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <payment>
+            <redsys>
+                <model>Codeko\Redsys\Model\Redsys</model>
+                <debug>1</debug>
+                <active>0</active>
+                <title>Redsys</title>
+                <payment_action>true</payment_action>
+                <currency>EUR</currency>
+            </redsys>
+        </payment>
+    </default>
+</config>
