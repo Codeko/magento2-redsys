@@ -2,8 +2,6 @@
 
 namespace Codeko\Redsys\Model\Api;
 
-use Codeko\Redsys\Model\Api\Services_JSON;
-use Codeko\Redsys\Model\Api\Services_JSON_Error;
 use Codeko\Redsys\Model\Api\ReplacesHash;
 
 if (!defined('PHP_VERSION_ID')) {
@@ -33,18 +31,6 @@ class RedsysAPI {
     ////////////					FUNCIONES AUXILIARES:							  ////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    /*     * ****  JSON Encode Functions (PHP4) ***** */
-    function json_decode4($data) {
-        $json = new Services_JSON();
-        return $json->decode($data);
-    }
-
-    function json_encode4($data) {
-        $json = new Services_JSON();
-        return $json->encode($data);
-    }
 
     /*     * ****  3DES Function  ***** */
 
@@ -80,11 +66,7 @@ class RedsysAPI {
     /*     * ****  MAC Function ***** */
 
     function mac256($ent, $key) {
-        if (PHP_VERSION_ID < 50102) {
-            $res = ReplacesHash::hash_hmac4('sha256', $ent, $key, true);
-        } else {
-            $res = hash_hmac('sha256', $ent, $key, true); //(PHP 5 >= 5.1.2)
-        }
+        $res = hash_hmac('sha256', $ent, $key, true); //(PHP 5 >= 5.1.2)
         return $res;
     }
 
@@ -108,11 +90,7 @@ class RedsysAPI {
     /*     * ****  Convertir Array en Objeto JSON ***** */
 
     function arrayToJson() {
-        if (PHP_VERSION_ID < 50200) {
-            $json = $this->json_encode4($this->vars_pay);
-        } else {
-            $json = json_encode($this->vars_pay); //(PHP 5 >= 5.2.0)
-        }
+        $json = json_encode($this->vars_pay); //(PHP 5 >= 5.2.0)
         return $json;
     }
 
@@ -156,11 +134,7 @@ class RedsysAPI {
     /*     * ****  Convertir String en Array ***** */
 
     function stringToArray($datosDecod) {
-        if (PHP_VERSION_ID < 50200) {
-            $this->vars_pay = $this->json_decode4($datosDecod);
-        } else {
-            $this->vars_pay = json_decode($datosDecod, true); //(PHP 5 >= 5.2.0)
-        }
+        $this->vars_pay = json_decode($datosDecod, true); //(PHP 5 >= 5.2.0)
     }
 
     function decodeMerchantParameters($datos) {

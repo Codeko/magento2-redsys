@@ -119,7 +119,10 @@ class Index extends \Codeko\Redsys\Controller\Index {
                 $moneda = "978";
             }
 
-            // Obtenemos los tipos de pago permitidos 
+            /**
+             * @TODO Lo correcto sería una configuración con los valores adecuados.
+             */
+            // Obtenemos los tipos de pago permitidos
             if ($tipopago == "0") {
                 $tipopago = " ";
             } else if ($tipopago == "1") {
@@ -157,6 +160,9 @@ class Index extends \Codeko\Redsys\Controller\Index {
 
             $this->helper->log('Redsys: Redirigiendo a TPV pedido: ' . strval($numpedido));
 
+            /**
+             * @ TODO Lo correcto sería poner configurables los tipos de entorno o si queremos mantenerlo así, tener una función uqe nos lo de.
+             */
             if ($entorno == "1") {
                 echo ('<form action="http://sis-d.redsys.es/sis/realizarPago/utf-8" method="post" id="redsys_form" name="redsys_form">');
             } else if ($entorno == "2") {

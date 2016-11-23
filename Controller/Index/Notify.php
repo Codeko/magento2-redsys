@@ -49,6 +49,9 @@ class Notify extends \Codeko\Redsys\Controller\Index {
             $terminalOrig = $this->helper->getConfigData('terminal');
             $monedaOrig = $this->helper->getConfigData('currency');
             $tipoTransOrig = $this->helper->getConfigData('tipo_transaccion');
+            /**
+             * @TODO Lo correcto sería una configuración con los valores adecuados.
+             */
             // Obtenemos el código ISO del tipo de moneda
             if ($monedaOrig == "0") {
                 $monedaOrig = "978";
