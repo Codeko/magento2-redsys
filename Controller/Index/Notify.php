@@ -26,8 +26,6 @@ class Notify extends \Codeko\Redsys\Controller\Index {
             $this->helper->log($id_log . " -- " . "Ds_MerchantParameters: " . $datos);
             $this->helper->log($id_log . " -- " . "Ds_Signature: " . $firma_remota);
 
-            // Se decodifican los datos enviados y se carga el array de datos
-            $decodec = $this->utilities->decodeMerchantParameters($datos);
             // Clave
             $kc = $this->helper->getConfigData('clave256');
             // Se calcula la firma
@@ -140,7 +138,7 @@ class Notify extends \Codeko\Redsys\Controller\Index {
                         $isCustomerNotified = true;
                         $order->setState($state, $status, $comment, $isCustomerNotified);
                         $order->save();
-                        $this->helper->log($id_log . " -- " . "El pedido con ID de carrito " . $order_id . " es válido y se ha registrado correctamente.", $logActivo);
+                        $this->helper->log($id_log . " -- " . "El pedido con ID de carrito " . $order_id . " es válido y se ha registrado correctamente.");
                         $this->checkout_session->setQuoteId($order->getQuoteId());
                         $this->checkout_session->getQuote()->setIsActive(false)->save();
                     } catch (\Exception $e) {
