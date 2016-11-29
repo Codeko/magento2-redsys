@@ -88,6 +88,10 @@ class Index extends \Codeko\Redsys\Controller\Index {
             $signatureMac = $this->utilities->createMerchantSignature($clave256);
 
             $this->helper->log('Redsys: Redirigiendo a TPV pedido: ' . strval($numpedido));
+            $this->helper->log('Enviando Ds_SignatureVersion: ' . $version);
+            $this->helper->log('Enviando Ds_MerchantParameters: ' . $paramsBase64);
+            $this->helper->log('Enviando Ds_Signature: ' . $signatureMac);
+            $this->helper->log('Esperando Notificación .....');
             
             $action_entorno = $this->utilities->getEntornoTpv($entorno);
 
