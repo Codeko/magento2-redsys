@@ -51,5 +51,5 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper {
         $path = 'payment/redsys/' . $field;
         return $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
     }
-
+    
 }

@@ -10,7 +10,7 @@ namespace Codeko\Redsys\Model\Config\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
 
-class Currency implements OptionSourceInterface {
+class Transaction implements OptionSourceInterface {
 
     /**
      * Get options
@@ -20,12 +20,12 @@ class Currency implements OptionSourceInterface {
     public function toOptionArray() {
         $options = [];
         $options[] = [
-            'label' => __('EURO'),
-            'value' => 'EUR',
+            'label' => __('Autorización'),
+            'value' => 0,
         ];
         $options[] = [
-            'label' => __('DOLAR'),
-            'value' => 'DOL',
+            'label' => __('Preautorización'),
+            'value' => 1,
         ];
         return $options;
     }

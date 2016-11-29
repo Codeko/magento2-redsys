@@ -57,121 +57,41 @@ class Index extends \Codeko\Redsys\Controller\Index {
             $urlok = $base_url . 'redsys/index/success';
             $urlko = $base_url . 'redsys/index/cancel';
 
-            /**
-             * @TODO Hay que mejorar los idiomas. Lo suyo es que tenga una configuración con las distintas opciones.
-             */
-            if ($idiomas == "0") {
-                $idioma_tpv = "0";
-            } else {
-                $idioma_web = substr(Mage::getStoreConfig('general/locale/code', Mage::app()->getStore()->getId()), 0, 2);
-                switch ($idioma_web) {
-                    case 'es':
-                        $idioma_tpv = '001';
-                        break;
-                    case 'en':
-                        $idioma_tpv = '002';
-                        break;
-                    case 'ca':
-                        $idioma_tpv = '003';
-                        break;
-                    case 'fr':
-                        $idioma_tpv = '004';
-                        break;
-                    case 'de':
-                        $idioma_tpv = '005';
-                        break;
-                    case 'nl':
-                        $idioma_tpv = '006';
-                        break;
-                    case 'it':
-                        $idioma_tpv = '007';
-                        break;
-                    case 'sv':
-                        $idioma_tpv = '008';
-                        break;
-                    case 'pt':
-                        $idioma_tpv = '009';
-                        break;
-                    case 'pl':
-                        $idioma_tpv = '011';
-                        break;
-                    case 'gl':
-                        $idioma_tpv = '012';
-                        break;
-                    case 'eu':
-                        $idioma_tpv = '013';
-                        break;
-                    default:
-                        $idioma_tpv = '002';
-                }
-            }
+            $idioma_tpv = $this->utilities->getIdiomaTpv();
+            
+            $moneda = $this->utilities->getMonedaTpv($moneda);
+            
+            $tipopago = $this->utilities->getTipoPagoTpv($tipopago);
 
-            /**
-             * @TODO Lo correcto sería una configuración con los valores adecuados.
-             */
-            if ($moneda == "0") {
-                $moneda = "978";
-            } else if ($moneda == "1") {
-                $moneda = "840";
-            } else if ($moneda == "2") {
-                $moneda = "826";
-            } else {
-                $moneda = "978";
-            }
-
-            /**
-             * @TODO Lo correcto sería una configuración con los valores adecuados.
-             */
-            // Obtenemos los tipos de pago permitidos
-            if ($tipopago == "0") {
-                $tipopago = " ";
-            } else if ($tipopago == "1") {
-                $tipopago = "C";
-            } else {
-                $tipopago = "T";
-            }
-
-            $redsys_form = new RedsysAPI;
-            $redsys_form->setParameter("DS_MERCHANT_AMOUNT", $cantidad);
-            $redsys_form->setParameter("DS_MERCHANT_ORDER", strval($numpedido));
-            $redsys_form->setParameter("DS_MERCHANT_MERCHANTCODE", $codigo);
-            $redsys_form->setParameter("DS_MERCHANT_CURRENCY", $moneda);
-            /**
-             * @ TODO Lo correcto sería poner configurables los tipos de transacción.
-             */
-            $redsys_form->setParameter("DS_MERCHANT_TRANSACTIONTYPE", $trans);
-            $redsys_form->setParameter("DS_MERCHANT_TERMINAL", $terminal);
-            $redsys_form->setParameter("DS_MERCHANT_MERCHANTURL", $urltienda);
-            $redsys_form->setParameter("DS_MERCHANT_URLOK", $urlok);
-            $redsys_form->setParameter("DS_MERCHANT_URLKO", $urlko);
-            $redsys_form->setParameter("Ds_Merchant_ConsumerLanguage", $idioma_tpv);
-            $redsys_form->setParameter("Ds_Merchant_ProductDescription", $productos);
-            $redsys_form->setParameter("Ds_Merchant_Titular", $nombre);
-            $redsys_form->setParameter("Ds_Merchant_MerchantData", sha1($urltienda));
-            $redsys_form->setParameter("Ds_Merchant_MerchantName", $nombre);
-            $redsys_form->setParameter("Ds_Merchant_PayMethods", $tipopago);
-            $redsys_form->setParameter("Ds_Merchant_Module", "magento_redsys_2.8.3");
-            $version = RedsysLibrary::getVersionClave();
+            $this->utilities->setParameter("DS_MERCHANT_AMOUNT", $cantidad);
+            $this->utilities->setParameter("DS_MERCHANT_ORDER", strval($numpedido));
+            $this->utilities->setParameter("DS_MERCHANT_MERCHANTCODE", $codigo);
+            $this->utilities->setParameter("DS_MERCHANT_CURRENCY", $moneda);
+            $this->utilities->setParameter("DS_MERCHANT_TRANSACTIONTYPE", $trans);
+            $this->utilities->setParameter("DS_MERCHANT_TERMINAL", $terminal);
+            $this->utilities->setParameter("DS_MERCHANT_MERCHANTURL", $urltienda);
+            $this->utilities->setParameter("DS_MERCHANT_URLOK", $urlok);
+            $this->utilities->setParameter("DS_MERCHANT_URLKO", $urlko);
+            $this->utilities->setParameter("Ds_Merchant_ConsumerLanguage", $idioma_tpv);
+            $this->utilities->setParameter("Ds_Merchant_ProductDescription", $productos);
+            $this->utilities->setParameter("Ds_Merchant_Titular", $nombre);
+            $this->utilities->setParameter("Ds_Merchant_MerchantData", sha1($urltienda));
+            $this->utilities->setParameter("Ds_Merchant_MerchantName", $nombre);
+            $this->utilities->setParameter("Ds_Merchant_PayMethods", $tipopago);
+            $this->utilities->setParameter("Ds_Merchant_Module", "magento_redsys_2.8.3");
+            $version = $this->utilities->getVersionClave();
+            
             //Clave del comercio que se extrae de la configuración del comercio
             // Se generan los parámetros de la petición
             $request = "";
-            $paramsBase64 = $redsys_form->createMerchantParameters();
-            $signatureMac = $redsys_form->createMerchantSignature($clave256);
+            $paramsBase64 = $this->utilities->createMerchantParameters();
+            $signatureMac = $this->utilities->createMerchantSignature($clave256);
 
             $this->helper->log('Redsys: Redirigiendo a TPV pedido: ' . strval($numpedido));
+            
+            $action_entorno = $this->utilities->getEntornoTpv($entorno);
 
-            /**
-             * @ TODO Lo correcto sería poner configurables los tipos de entorno o si queremos mantenerlo así, tener una función uqe nos lo de.
-             */
-            if ($entorno == "1") {
-                echo ('<form action="http://sis-d.redsys.es/sis/realizarPago/utf-8" method="post" id="redsys_form" name="redsys_form">');
-            } else if ($entorno == "2") {
-                echo ('<form action="https://sis-i.redsys.es:25443/sis/realizarPago/utf-8" method="post" id="redsys_form" name="redsys_form">');
-            } else if ($entorno == "3") {
-                echo ('<form action="https://sis-t.redsys.es:25443/sis/realizarPago/utf-8" method="post" id="redsys_form" name="redsys_form">');
-            } else {
-                echo ('<form action="https://sis.redsys.es/sis/realizarPago/utf-8" method="post" id="redsys_form" name="redsys_form">');
-            }
+            echo ('<form action="' . $action_entorno . '" method="post" id="redsys_form" name="redsys_form">');
             
             echo ('
 				<input type="hidden" name="Ds_SignatureVersion" value="' . $version . '" />

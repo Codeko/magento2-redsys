@@ -3,70 +3,79 @@
 namespace Codeko\Redsys\Controller\Index;
 
 use Magento\Framework\Controller\ResultFactory;
-use Codeko\Redsys\Model\Api\RedsysAPI;
-use Codeko\Redsys\Model\Api\RedsysLibrary;
 
 /**
  * @TODO A nivel general, esta clase hereda del módulo de redsys de magento1.X y tiene muchos problemas y carencias.
- * Tendriamos que revisar ante todo las situaciones. En Magento 2.X se incorporan las situaciones para las facturas.
+ * - Tendriamos que revisar ante todo las situaciones. En Magento 2.X se incorporan las situaciones para las facturas.
+ * - Tras la mejora que hemos hecho, tendríamos que separar en funciones el execute para que sea más comprensible y 
+ * - fácil de modificar.
  */
-
 class Notify extends \Codeko\Redsys\Controller\Index {
 
     public function execute() {
-        $id_log = RedsysLibrary::generateIdLog();
+        $id_log = $this->utilities->generateIdLog();
         $mantener_pedido_ante_error = $this->helper->getConfigData('errorpago');
         $this->helper->log($id_log . " -- " . "Notificando desde Redsys ");
-        if (!empty($_POST)) { //URL RESP. ONLINE
-            /** Recoger datos de respuesta * */
-            $version = $_POST["Ds_SignatureVersion"];
-            $datos = $_POST["Ds_MerchantParameters"];
-            $firma_remota = $_POST["Ds_Signature"];
+
+        if (!empty($_REQUEST)) {
+            $version = $_REQUEST['Ds_SignatureVersion'];
+            $datos = $_REQUEST["Ds_MerchantParameters"];
+            $firma_remota = $_REQUEST["Ds_Signature"];
+
             $this->helper->log($id_log . " -- " . "Ds_SignatureVersion: " . $version);
             $this->helper->log($id_log . " -- " . "Ds_MerchantParameters: " . $datos);
             $this->helper->log($id_log . " -- " . "Ds_Signature: " . $firma_remota);
-            // Se crea Objeto
-            $redsys_obj = new RedsysAPI();
-            /** Se decodifican los datos enviados y se carga el array de datos * */
-            $decodec = $redsys_obj->decodeMerchantParameters($datos);
-            /** Clave * */
+
+            // Se decodifican los datos enviados y se carga el array de datos
+            $decodec = $this->utilities->decodeMerchantParameters($datos);
+            // Clave
             $kc = $this->helper->getConfigData('clave256');
-            /** Se calcula la firma * */
-            $firma_local = $redsys_obj->createMerchantSignatureNotif($kc, $datos);
-            /** Extraer datos de la notificación * */
-            $total = $redsys_obj->getParameter('Ds_Amount');
-            $pedido = $redsys_obj->getParameter('Ds_Order');
-            $codigo = $redsys_obj->getParameter('Ds_MerchantCode');
-            $terminal = $redsys_obj->getParameter('Ds_Terminal');
-            $moneda = $redsys_obj->getParameter('Ds_Currency');
-            $respuesta = $redsys_obj->getParameter('Ds_Response');
-            $fecha = $redsys_obj->getParameter('Ds_Date');
-            $hora = $redsys_obj->getParameter('Ds_Hour');
-            $id_trans = $redsys_obj->getParameter('Ds_AuthorisationCode');
-            $tipoTrans = $redsys_obj->getParameter('Ds_TransactionType');
+            // Se calcula la firma
+            $firma_local = $this->utilities->createMerchantSignatureNotif($kc, $datos);
+
+            // Extraer datos de la notificación
+            $total = $this->utilities->getParameter('Ds_Amount');
+            $pedido = $this->utilities->getParameter('Ds_Order');
+            $codigo = $this->utilities->getParameter('Ds_MerchantCode');
+            $terminal = $this->utilities->getParameter('Ds_Terminal');
+            $moneda = $this->utilities->getParameter('Ds_Currency');
+            $respuesta = $this->utilities->getParameter('Ds_Response');
+            $fecha = $this->utilities->getParameter('Ds_Date');
+            $hora = $this->utilities->getParameter('Ds_Hour');
+            $id_trans = $this->utilities->getParameter('Ds_AuthorisationCode');
+            $tipo_trans = $this->utilities->getParameter('Ds_TransactionType');
+
             // Recogemos los datos del comercio
-            $codigoOrig = $this->helper->getConfigData('numero_comercio');
-            $terminalOrig = $this->helper->getConfigData('terminal');
-            $monedaOrig = $this->helper->getConfigData('currency');
-            $tipoTransOrig = $this->helper->getConfigData('tipo_transaccion');
-            /**
-             * @TODO Lo correcto sería una configuración con los valores adecuados.
-             */
-            // Obtenemos el código ISO del tipo de moneda
-            if ($monedaOrig == "0") {
-                $monedaOrig = "978";
-            } else {
-                $monedaOrig = "840";
-            }
+            $codigo_orig = $this->helper->getConfigData('numero_comercio');
+            $terminal_orig = $this->helper->getConfigData('terminal');
+            $moneda_orig = $this->helper->getConfigData('currency');
+            $tipo_trans_orig = $this->helper->getConfigData('tipo_transaccion');
+
+            $moneda_orig = $this->utilities->getMonedaTpv($moneda_orig);
+
             $order_id = substr($pedido, 3);
             // Limpiamos 0 por delante agregados para pasarlo como parámetro
             $pedido = ltrim($pedido, '0');
             // Inicializamos el valor del status del pedido
             $status = "";
-            
+
             // Validacion de firma y parámetros
-            if ($firma_local === $firma_remota && RedsysLibrary::checkImporte($total) && RedsysLibrary::checkPedidoNum($pedido) && RedsysLibrary::checkFuc($codigo) && RedsysLibrary::checkMoneda($moneda) && RedsysLibrary::checkRespuesta($respuesta) && $tipoTrans == $tipoTransOrig && $codigo == $codigoOrig && intval(strval($terminalOrig)) == intval(strval($terminal))) {
-                // Respuesta cumple las validaciones
+            $values_val = array();
+            $values_val['firma_local'] = $firma_local;
+            $values_val['firma_remota'] = $firma_remota;
+            $values_val['total'] = $total;
+            $values_val['pedido'] = $pedido;
+            $values_val['codigo'] = $codigo;
+            $values_val['codigo_orig'] = $codigo_orig;
+            $values_val['moneda'] = $moneda;
+            $values_val['respuesta'] = $respuesta;
+            $values_val['tipo_trans'] = $tipo_trans;
+            $values_val['tipo_trans_orig'] = $tipo_trans_orig;
+            $values_val['terminal'] = $terminal;
+            $values_val['terminal_orig'] = $terminal_orig;
+
+            $validate = $this->validator->validate($values_val);
+            if ($validate === true) {
                 $respuesta = intval($respuesta);
                 $this->helper->log($id_log . " - Código de respuesta: " . $respuesta);
                 if ($respuesta < 101) {
@@ -116,7 +125,7 @@ class Notify extends \Codeko\Redsys\Controller\Index {
                             )
                             ->setIsCustomerNotified(true)
                             ->save();
-                        
+
                         /**
                          * @TODO Tendremos que revisar el envío de emails a la hora de crear el pedido.
                          */
@@ -154,6 +163,7 @@ class Notify extends \Codeko\Redsys\Controller\Index {
                 }
             } else {
                 $this->helper->log($id_log . " - Validaciones NO superadas");
+                $this->helper->log($id_log . implode(' | ', $validate));
                 $order->loadByIncrementId($order_id);
                 $state = 'new';
                 $status = 'canceled';
@@ -162,58 +172,6 @@ class Notify extends \Codeko\Redsys\Controller\Index {
                 $order->setState($state, $status, $comment, $isCustomerNotified);
                 $order->registerCancellation("")->save();
                 $order->save();
-            }
-        } else if (!empty($_GET)) { //URL OK Y KO
-            /** Recoger datos de respuesta * */
-            $version = $_GET["Ds_SignatureVersion"];
-            $datos = $_GET["Ds_MerchantParameters"];
-            $firma_remota = $_GET["Ds_Signature"];
-            // Se crea Objeto
-            $redsys_obj = new RedsysAPI;
-            /** Se decodifican los datos enviados y se carga el array de datos * */
-            $decodec = $redsys_obj->decodeMerchantParameters($datos);
-            /** Clave * */
-            $kc = $this->helper->getConfigData('clave256');
-            /** Se calcula la firma * */
-            $firma_local = $redsys_obj->createMerchantSignatureNotif($kc, $datos);
-            /** Extraer datos de la notificación * */
-            $total = $redsys_obj->getParameter('Ds_Amount');
-            $pedido = $redsys_obj->getParameter('Ds_Order');
-            $codigo = $redsys_obj->getParameter('Ds_MerchantCode');
-            $terminal = $redsys_obj->getParameter('Ds_Terminal');
-            $moneda = $redsys_obj->getParameter('Ds_Currency');
-            $respuesta = $redsys_obj->getParameter('Ds_Response');
-            $fecha = $redsys_obj->getParameter('Ds_Date');
-            $hora = $redsys_obj->getParameter('Ds_Hour');
-            $id_trans = $redsys_obj->getParameter('Ds_AuthorisationCode');
-            $tipoTrans = $redsys_obj->getParameter('Ds_TransactionType');
-            // Recogemos los datos del comercio
-            $codigoOrig = $this->helper->getConfigData('num');
-            $terminalOrig = $this->helper->getConfigData('terminal');
-            $monedaOrig = $this->helper->getConfigData('moneda');
-            $tipoTransOrig = $this->helper->getConfigData('trans');
-            // Obtenemos el código ISO del tipo de moneda
-            if ($monedaOrig == "0") {
-                $monedaOrig = "978";
-            } else {
-                $monedaOrig = "840";
-            }
-            $order_id = substr($pedido, 3);
-            $pedido = ltrim($pedido, '0');
-            if ($firma_local === $firma_remota && RedsysLibrary::checkImporte($total) && RedsysLibrary::checkPedidoNum($pedido) && RedsysLibrary::checkFuc($codigo) && RedsysLibrary::checkMoneda($moneda) && RedsysLibrary::checkRespuesta($respuesta) && $tipoTrans == $tipoTransOrig && $codigo == $codigoOrig && intval(strval($terminalOrig)) == intval(strval($terminal))) {
-                $respuesta = intval($respuesta);
-                $order = $this->order_factory->create();
-                $order->loadByIncrementId($order_id);
-                if ($respuesta < 101) {
-                    $transaction_amount = number_format($order->getBaseGrandTotal(), 2, '', '');
-                    $amountOrig = (float) $transaction_amount;
-                } else {
-                    if (strval($mantener_pedido_ante_error) == 1) {
-                        /**
-                         * @TODO habrá que implementar el mantener en el carrito correctamente
-                         */
-                    }
-                }
             }
         } else {
             $this->helper->log('No hay respuesta por parte de Redsys!');

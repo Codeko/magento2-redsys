@@ -45,8 +45,9 @@
                     <label>Currency</label>
                     <source_model>Codeko\Redsys\Model\Config\Source\Currency</source_model>
                 </field>
-                <field id="tipo_transaccion" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="tipo_transaccion" translate="label" type="select" sortOrder="95" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Tipo transacción</label>
+                    <source_model>Codeko\Redsys\Model\Config\Source\Transaction</source_model>
                 </field>
                 <field id="logactivo" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Log activo</label>

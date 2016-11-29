@@ -15,6 +15,7 @@
                 <title>Redsys</title>
                 <payment_action>true</payment_action>
                 <currency>EUR</currency>
+                <tipo_transaccion>0</tipo_transaccion>
             </redsys>
         </payment>
     </default>

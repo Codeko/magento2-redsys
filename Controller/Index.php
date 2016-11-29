@@ -46,6 +46,16 @@ abstract class Index extends \Magento\Framework\App\Action\Action {
      * @var \Codeko\Redsys\Helper\Data
      */
     protected $helper;
+    
+    /**
+     * @var \Codeko\Redsys\Helper\Validator
+     */
+    protected $validator;
+    
+    /**
+     * @var \Codeko\Redsys\Helper\Utilities
+     */
+    protected $utilities;
 
     /**
      * @var \Magento\Sales\Api\OrderRepositoryInterface
@@ -103,6 +113,8 @@ abstract class Index extends \Magento\Framework\App\Action\Action {
         $params[StoreManager::PARAM_RUN_TYPE] = 'store';
         $this->object_manager = $object_factory->create($params);
         $this->helper = $this->object_manager->create('Codeko\Redsys\Helper\Data');
+        $this->validator = $this->object_manager->create('Codeko\Redsys\Helper\Validator');
+        $this->utilities = $this->object_manager->create('Codeko\Redsys\Helper\Utilities');
     }
 
 }
