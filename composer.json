@@ -1,0 +1,29 @@
+{
+    "name": "codeko/redsys",
+    "description": "Redsys credit card Payment",
+    "require": {
+        "php": "~5.5.0|~5.6.0|~7.0.0"
+    },
+    "type": "magento2-module",
+    "version": "3.0.0",
+    "license": [
+        "OSL-3.0",
+        "AFL-3.0"
+    ],
+    "author": [
+        {
+            "name": "Codeko",
+            "email": "codeko@codeko.com",
+            "homepage": "http://http://codeko.com/",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Codeko\\Redsys\\": ""
+        }
+    }
+}

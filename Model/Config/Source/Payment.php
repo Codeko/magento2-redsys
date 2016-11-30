@@ -10,14 +10,16 @@ namespace Codeko\Redsys\Model\Config\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
 
-class Payment implements OptionSourceInterface {
+class Payment implements OptionSourceInterface
+{
 
     /**
      * Get options
      *
      * @return array
      */
-    public function toOptionArray() {
+    public function toOptionArray()
+    {
         $options = [];
         $options[] = [
             'label' => __('Todos'),
@@ -33,5 +35,4 @@ class Payment implements OptionSourceInterface {
         ];
         return $options;
     }
-
 }

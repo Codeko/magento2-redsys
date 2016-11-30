@@ -7,7 +7,7 @@
     </type>
     <type name="Codeko\Redsys\Logger\Logger">
         <arguments>
-            <argument name="name" xsi:type="string">codekoRedsysLogger</argument>
+            <argument name="name" xsi:type="string">codeko_redsys</argument>
             <argument name="handlers" xsi:type="array">
                 <item name="system" xsi:type="object">Codeko\Redsys\Logger\Handler</item>
             </argument>

@@ -5,36 +5,40 @@
 /*browser:true*/
 /*global define*/
 define(
-        [
+    [
             'Magento_Checkout/js/view/payment/default',
             'mage/url'
         ],
-        function (Component,
-                url) {
+    function (
+        Component,
+        url
+    ) {
             'use strict';
 
-            return Component.extend({
-                defaults: {
-                    template: 'Codeko_Redsys/payment/form',
-                },
-                redirectAfterPlaceOrder: false,
+            return Component.extend(
+                {
+                    defaults: {
+                        template: 'Codeko_Redsys/payment/form',
+                    },
+                    redirectAfterPlaceOrder: false,
                 
-                getCode: function () {
-                    return 'redsys';
-                },
+                    getCode: function () {
+                        return 'redsys';
+                    },
                 
-                getData: function () {
-                    return {
-                        'method': this.item.method,
-                        'additional_data': {
-                            'transaction_result': "1"
-                        }
-                    };
-                },
+                    getData: function () {
+                        return {
+                            'method': this.item.method,
+                            'additional_data': {
+                                'transaction_result': "1"
+                            }
+                        };
+                    },
                 
-                afterPlaceOrder: function () {
-                    window.location.replace(url.build('redsys/'));
+                    afterPlaceOrder: function () {
+                        window.location.replace(url.build('redsys/'));
+                    }
                 }
-            });
-        }
+            );
+    }
 );

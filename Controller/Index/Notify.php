@@ -4,52 +4,52 @@ namespace Codeko\Redsys\Controller\Index;
 
 use Magento\Framework\Controller\ResultFactory;
 
-/**
- * @TODO A nivel general, esta clase hereda del módulo de redsys de magento1.X y tiene muchos problemas y carencias.
- * - Tendriamos que revisar ante todo las situaciones. En Magento 2.X se incorporan las situaciones para las facturas.
- * - Tras la mejora que hemos hecho, tendríamos que separar en funciones el execute para que sea más comprensible y 
- * - fácil de modificar.
- */
-class Notify extends \Codeko\Redsys\Controller\Index {
+class Notify extends \Codeko\Redsys\Controller\Index
+{
+    
+    /**
+     * Separar función execute en funciones para mejorar compresión y usabilidad.
+     */
+    public function execute()
+    {
+        $id_log = $this->getUtilities()->generateIdLog();
+        $mantener_pedido_ante_error = $this->getHelper()->getConfigData('errorpago');
+        $this->getHelper()->log($id_log . " -- " . "Notificando desde Redsys ");
+        
+        $params_request = $this->getRequest()->getParams();
+        if (!empty($params_request)) {
+            $version = $params_request['Ds_SignatureVersion'];
+            $datos = $params_request["Ds_MerchantParameters"];
+            $firma_remota = $params_request["Ds_Signature"];
 
-    public function execute() {
-        $id_log = $this->utilities->generateIdLog();
-        $mantener_pedido_ante_error = $this->helper->getConfigData('errorpago');
-        $this->helper->log($id_log . " -- " . "Notificando desde Redsys ");
-
-        if (!empty($_REQUEST)) {
-            $version = $_REQUEST['Ds_SignatureVersion'];
-            $datos = $_REQUEST["Ds_MerchantParameters"];
-            $firma_remota = $_REQUEST["Ds_Signature"];
-
-            $this->helper->log($id_log . " -- " . "Ds_SignatureVersion: " . $version);
-            $this->helper->log($id_log . " -- " . "Ds_MerchantParameters: " . $datos);
-            $this->helper->log($id_log . " -- " . "Ds_Signature: " . $firma_remota);
+            $this->getHelper()->log($id_log . " -- " . "Ds_SignatureVersion: " . $version);
+            $this->getHelper()->log($id_log . " -- " . "Ds_MerchantParameters: " . $datos);
+            $this->getHelper()->log($id_log . " -- " . "Ds_Signature: " . $firma_remota);
 
             // Clave
-            $kc = $this->helper->getConfigData('clave256');
+            $kc = $this->getHelper()->getConfigData('clave256');
             // Se calcula la firma
-            $firma_local = $this->utilities->createMerchantSignatureNotif($kc, $datos);
+            $firma_local = $this->getUtilities()->createMerchantSignatureNotif($kc, $datos);
 
             // Extraer datos de la notificación
-            $total = $this->utilities->getParameter('Ds_Amount');
-            $pedido = $this->utilities->getParameter('Ds_Order');
-            $codigo = $this->utilities->getParameter('Ds_MerchantCode');
-            $terminal = $this->utilities->getParameter('Ds_Terminal');
-            $moneda = $this->utilities->getParameter('Ds_Currency');
-            $respuesta = $this->utilities->getParameter('Ds_Response');
-            $fecha = $this->utilities->getParameter('Ds_Date');
-            $hora = $this->utilities->getParameter('Ds_Hour');
-            $id_trans = $this->utilities->getParameter('Ds_AuthorisationCode');
-            $tipo_trans = $this->utilities->getParameter('Ds_TransactionType');
+            $total = $this->getUtilities()->getParameter('Ds_Amount');
+            $pedido = $this->getUtilities()->getParameter('Ds_Order');
+            $codigo = $this->getUtilities()->getParameter('Ds_MerchantCode');
+            $terminal = $this->getUtilities()->getParameter('Ds_Terminal');
+            $moneda = $this->getUtilities()->getParameter('Ds_Currency');
+            $respuesta = $this->getUtilities()->getParameter('Ds_Response');
+            $fecha = $this->getUtilities()->getParameter('Ds_Date');
+            $hora = $this->getUtilities()->getParameter('Ds_Hour');
+            $id_trans = $this->getUtilities()->getParameter('Ds_AuthorisationCode');
+            $tipo_trans = $this->getUtilities()->getParameter('Ds_TransactionType');
 
             // Recogemos los datos del comercio
-            $codigo_orig = $this->helper->getConfigData('numero_comercio');
-            $terminal_orig = $this->helper->getConfigData('terminal');
-            $moneda_orig = $this->helper->getConfigData('currency');
-            $tipo_trans_orig = $this->helper->getConfigData('tipo_transaccion');
+            $codigo_orig = $this->getHelper()->getConfigData('numero_comercio');
+            $terminal_orig = $this->getHelper()->getConfigData('terminal');
+            $moneda_orig = $this->getHelper()->getConfigData('currency');
+            $tipo_trans_orig = $this->getHelper()->getConfigData('tipo_transaccion');
 
-            $moneda_orig = $this->utilities->getMonedaTpv($moneda_orig);
+            $moneda_orig = $this->getUtilities()->getMonedaTpv($moneda_orig);
 
             $order_id = substr($pedido, 3);
             // Limpiamos 0 por delante agregados para pasarlo como parámetro
@@ -58,7 +58,7 @@ class Notify extends \Codeko\Redsys\Controller\Index {
             $status = "";
 
             // Validacion de firma y parámetros
-            $values_val = array();
+            $values_val = null;
             $values_val['firma_local'] = $firma_local;
             $values_val['firma_remota'] = $firma_remota;
             $values_val['total'] = $total;
@@ -72,26 +72,25 @@ class Notify extends \Codeko\Redsys\Controller\Index {
             $values_val['terminal'] = $terminal;
             $values_val['terminal_orig'] = $terminal_orig;
 
-            $validate = $this->validator->validate($values_val);
+            $validate = $this->getValidator()->validate($values_val);
             if ($validate === true) {
-                $respuesta = intval($respuesta);
-                $this->helper->log($id_log . " - Código de respuesta: " . $respuesta);
+                $respuesta = (int)$respuesta;
+                $this->getHelper()->log($id_log . " - Código de respuesta: " . $respuesta);
                 if ($respuesta < 101) {
-                    $this->helper->log($id_log . " - Pago aceptado.");
+                    $this->getHelper()->log($id_log . " - Pago aceptado.");
 
                     /**
-                     * @TODO Habrá que implementar el email a cliente. La configuración necesaria sí está en el admin.
+                     * Habrá que implementar el email a cliente. La configuración necesaria sí está en el admin.
                      * Además la gestión que hace de order_id, ord, orde y pedido no tiene sentido alguno
-                     * 
                      */
                     //Id pedido
-                    $this->helper->log($id_log . " - Order increment id " . $order_id);
-                    $order = $this->order_factory->create();
+                    $this->getHelper()->log($id_log . " - Order increment id " . $order_id);
+                    $order = $this->getOrderFactory()->create();
                     $order->loadByIncrementId($order_id);
                     $transaction_amount = number_format($order->getBaseGrandTotal(), 2, '', '');
                     $amountOrig = (float) $transaction_amount;
                     if ($amountOrig != $total) {
-                        $this->helper->log($id_log . " -- " . "El importe total no coincide.");
+                        $this->getHelper()->log($id_log . " -- " . "El importe total no coincide.");
                         // Diferente importe
                         $state = 'new';
                         $status = 'canceled';
@@ -100,68 +99,73 @@ class Notify extends \Codeko\Redsys\Controller\Index {
                         $order->setState($state, $status, $comment, $isCustomerNotified);
                         $order->registerCancellation("")->save();
                         $order->save();
-                        $this->helper->log($id_log . " -- " . "El pedido con ID de carrito " . $order_id . " es inválido.");
+                        $this->getHelper()->log($id_log . " -- " .
+                            "El pedido con ID de carrito " . $order_id . " es inválido.");
                     }
                     try {
                         if (!$order->canInvoice()) {
                             $order->addStatusHistoryComment('Redsys, imposible generar Factura.', false);
                             $order->save();
                         }
-                        $invoice = $this->invoice_service->prepareInvoice($order);
+                        $invoice = $this->getInvoiceService()->prepareInvoice($order);
                         $invoice->register();
                         $invoice->save();
-                        $transaction_save = $this->transaction->addObject(
-                                $invoice
-                            )->addObject(
+                        $transaction_save = $this->getTransaction()->addObject(
+                            $invoice
+                        )->addObject(
                             $invoice->getOrder()
                         );
                         $transaction_save->save();
-                        $this->invoice_sender->send($invoice);
+                        $this->getInvoiceSender()->send($invoice);
                         //send notification code
                         $order->addStatusHistoryComment(
-                                __('Notified customer about invoice #%1.', $invoice->getId())
-                            )
+                            __('Notified customer about invoice #%1.', $invoice->getId())
+                        )
                             ->setIsCustomerNotified(true)
                             ->save();
 
                         /**
-                         * @TODO Tendremos que revisar el envío de emails a la hora de crear el pedido.
+                         * Tendremos que revisar el envío de emails a la hora de crear el pedido.
                          */
-                        //Email al cliente
-                        //$order->sendNewOrderEmail();
-                        //$this->helper->log("Pedido: $order_id se ha enviado correctamente");
+                        
+                        /**
+                         * Email al cliente
+                         * $order->sendNewOrderEmail();
+                         * $this->getHelper()->log("Pedido: $order_id se ha enviado correctamente");
+                         */
+                        
                         //Se actualiza el pedido
-
                         $state = 'new';
                         $status = 'processing';
                         $comment = 'Redsys ha actualizado el estado del pedido con el valor "' . $status . '"';
                         $isCustomerNotified = true;
                         $order->setState($state, $status, $comment, $isCustomerNotified);
                         $order->save();
-                        $this->helper->log($id_log . " -- " . "El pedido con ID de carrito " . $order_id . " es válido y se ha registrado correctamente.");
-                        $this->checkout_session->setQuoteId($order->getQuoteId());
-                        $this->checkout_session->getQuote()->setIsActive(false)->save();
+                        $this->getHelper()->log($id_log . " -- " . "El pedido con ID de carrito " .
+                            $order_id . " es válido y se ha registrado correctamente.");
+                        $this->getCheckoutSession()->setQuoteId($order->getQuoteId());
+                        $this->getCheckoutSession()->getQuote()->setIsActive(false)->save();
                     } catch (\Exception $e) {
                         $order->addStatusHistoryComment('Redsys: Exception message: ' . $e->getMessage(), false);
                         $order->save();
-                        $this->helper->log('Error en notificación desde Redsys ' . $e->getMessage());
+                        $this->getHelper()->log('Error en notificación desde Redsys ' . $e->getMessage());
                     }
                 } else {
-                    $this->helper->log($id_log . " - Pago no aceptado");
-                    $order = $this->order_factory->create();
+                    $this->getHelper()->log($id_log . " - Pago no aceptado");
+                    $order = $this->getOrderFactory()->create();
                     $order->loadByIncrementId($order_id);
                     $state = 'new';
                     $status = 'canceled';
                     $comment = 'Redsys ha actualizado el estado del pedido con el valor "' . $status . '"';
-                    $this->helper->log($id_log . " - Actualizado el estado del pedido con el valor " . $status);
+                    $this->getHelper()->log($id_log . " - Actualizado el estado del pedido con el valor " . $status);
                     $isCustomerNotified = true;
                     $order->setState($state, $status, $comment, $isCustomerNotified);
                     $order->registerCancellation("")->save();
                     $order->save();
                 }
             } else {
-                $this->helper->log($id_log . " - Validaciones NO superadas");
-                $this->helper->log($id_log . implode(' | ', $validate));
+                $this->getHelper()->log($id_log . " - Validaciones NO superadas");
+                $this->getHelper()->log($id_log . implode(' | ', $validate));
                 $order->loadByIncrementId($order_id);
                 $state = 'new';
                 $status = 'canceled';
@@ -172,9 +176,7 @@ class Notify extends \Codeko\Redsys\Controller\Index {
                 $order->save();
             }
         } else {
-            $this->helper->log('No hay respuesta por parte de Redsys!');
-            echo 'No hay respuesta por parte de Redsys!';
+            $this->getHelper()->log('No hay respuesta por parte de Redsys!');
         }
     }
-
 }

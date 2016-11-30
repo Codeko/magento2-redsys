@@ -10,14 +10,16 @@ namespace Codeko\Redsys\Model\Config\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
 
-class Transaction implements OptionSourceInterface {
+class Transaction implements OptionSourceInterface
+{
 
     /**
      * Get options
      *
      * @return array
      */
-    public function toOptionArray() {
+    public function toOptionArray()
+    {
         $options = [];
         $options[] = [
             'label' => __('Autorización'),
@@ -29,5 +31,4 @@ class Transaction implements OptionSourceInterface {
         ];
         return $options;
     }
-
 }

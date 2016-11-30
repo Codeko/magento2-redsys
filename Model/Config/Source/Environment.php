@@ -10,14 +10,16 @@ namespace Codeko\Redsys\Model\Config\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
 
-class Environment implements OptionSourceInterface {
+class Environment implements OptionSourceInterface
+{
 
     /**
      * Get options
      *
      * @return array
      */
-    public function toOptionArray() {
+    public function toOptionArray()
+    {
         $options = [];
         $options[] = [
             'label' => __('Real'),
@@ -37,5 +39,4 @@ class Environment implements OptionSourceInterface {
         ];
         return $options;
     }
-
 }

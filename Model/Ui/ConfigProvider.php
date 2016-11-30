@@ -12,7 +12,8 @@ use Magento\Checkout\Model\ConfigProviderInterface;
 /**
  * Class ConfigProvider
  */
-final class ConfigProvider implements ConfigProviderInterface {
+final class ConfigProvider implements ConfigProviderInterface
+{
 
     const CODE = 'redsys';
 
@@ -21,7 +22,8 @@ final class ConfigProvider implements ConfigProviderInterface {
      *
      * @return array
      */
-    public function getConfig() {
+    public function getConfig()
+    {
         return [
             'payment' => [
                 self::CODE => [
@@ -33,5 +35,4 @@ final class ConfigProvider implements ConfigProviderInterface {
             ]
         ];
     }
-
 }
