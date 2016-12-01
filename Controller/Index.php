@@ -24,7 +24,7 @@ abstract class Index extends \Magento\Framework\App\Action\Action
     private $order_factory;
 
     /**
-     * @var \Magento\Framework\App\ObjectManagerFactory
+     * @var \Magento\Framework\App\ObjectManager
      */
     private $object_manager;
 
@@ -88,11 +88,6 @@ abstract class Index extends \Magento\Framework\App\Action\Action
         return $this->order_factory;
     }
 
-    public function getObjectManagerRed()
-    {
-        return $this->object_manager;
-    }
-
     public function getStoreManager()
     {
         return $this->store_manager;
@@ -151,11 +146,6 @@ abstract class Index extends \Magento\Framework\App\Action\Action
     public function setOrderFactory(\Magento\Sales\Model\OrderFactory $order_factory)
     {
         $this->order_factory = $order_factory;
-    }
-
-    public function setObjectManagerRed(\Magento\Framework\App\ObjectManagerFactory $object_manager)
-    {
-        $this->object_manager = $object_manager;
     }
 
     public function setStoreManager(\Magento\Store\Model\StoreManagerInterface $store_manager)
@@ -233,12 +223,12 @@ abstract class Index extends \Magento\Framework\App\Action\Action
         $this->setTransaction($transaction);
         $params[StoreManager::PARAM_RUN_CODE] = 'admin';
         $params[StoreManager::PARAM_RUN_TYPE] = 'store';
-        $this->setObjectManagerRed($object_factory->create($params));
-        $this->setHelper($this->getObjectManagerRed()->create('Codeko\Redsys\Helper\Data'));
-        $this->setValidator($this->getObjectManagerRed()->create('Codeko\Redsys\Helper\Validator'));
-        $this->setUtilities($this->getObjectManagerRed()->create('Codeko\Redsys\Helper\Utilities'));
-        $this->setCheckoutSession($this->object_manager->create(\Magento\Checkout\Model\Session::class));
-        $this->setCustomerSession($this->object_manager->create(\Magento\Customer\Model\Session::class));
-        $this->setRequest($this->object_manager->get(\Magento\Framework\App\Request\Http::class));
+        $object_manager = $object_factory->create($params);
+        $this->setHelper($object_manager->create('Codeko\Redsys\Helper\Data'));
+        $this->setValidator($object_manager->create('Codeko\Redsys\Helper\Validator'));
+        $this->setUtilities($object_manager->create('Codeko\Redsys\Helper\Utilities'));
+        $this->setCheckoutSession($object_manager->create(\Magento\Checkout\Model\Session::class));
+        $this->setCustomerSession($object_manager->create(\Magento\Customer\Model\Session::class));
+        $this->setRequest($object_manager->get(\Magento\Framework\App\Request\Http::class));
     }
 }
