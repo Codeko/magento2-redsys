@@ -21,13 +21,7 @@ class Index extends \Codeko\Redsys\Controller\Index
         $terminal = $this->getHelper()->getConfigData('terminal');
         $moneda = $this->getHelper()->getConfigData('currency');
         $trans = $this->getHelper()->getConfigData('tipo_transaccion');
-        $notif = $this->getHelper()->getConfigData('notif');
-        $ssl = $this->getHelper()->getConfigData('ssl');
-        $error = $this->getHelper()->getConfigData('error');
-        $idiomas = $this->getHelper()->getConfigData('idiomas');
         $tipopago = $this->getHelper()->getConfigData('tipopago');
-        $correo = $this->getHelper()->getConfigData('correo');
-        $mensaje = $this->getHelper()->getConfigData('mensaje');
 
         //Obtenemos datos del pedido
         $order_id = $this->getCheckoutSession()->getLastRealOrderId();

@@ -13,7 +13,6 @@ class Notify extends \Codeko\Redsys\Controller\Index
     public function execute()
     {
         $id_log = $this->getUtilities()->generateIdLog();
-        $mantener_pedido_ante_error = $this->getHelper()->getConfigData('errorpago');
         $this->getHelper()->log($id_log . " -- " . "Notificando desde Redsys ");
         
         $params_request = $this->getRequest()->getParams();
@@ -48,6 +47,12 @@ class Notify extends \Codeko\Redsys\Controller\Index
             $terminal_orig = $this->getHelper()->getConfigData('terminal');
             $moneda_orig = $this->getHelper()->getConfigData('currency');
             $tipo_trans_orig = $this->getHelper()->getConfigData('tipo_transaccion');
+            if($tipo_trans_orig === 'authorize') {
+                $tipo_trans_orig = 1;
+            } else  {
+                $tipo_trans_orig = 0;
+            }
+            
 
             $moneda_orig = $this->getUtilities()->getMonedaTpv($moneda_orig);
 
