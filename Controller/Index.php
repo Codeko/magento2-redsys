@@ -212,11 +212,13 @@ abstract class Index extends \Magento\Framework\App\Action\Action
         \Magento\Store\Model\StoreManagerInterface $store_manager,
         \Magento\Sales\Model\Service\InvoiceService $invoice_service,
         \Magento\Framework\DB\Transaction $transaction,
-        \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoice_sender
+        \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoice_sender,
+        \Magento\Sales\Model\OrderRepository $order_repository
     ) {
     
         parent::__construct($context);
         $this->setOrderFactory($order_factory);
+        $this->setOrderRepository($order_repository);
         $this->setStoreManager($store_manager);
         $this->setInvoiceService($invoice_service);
         $this->setInvoiceSender($invoice_sender);
