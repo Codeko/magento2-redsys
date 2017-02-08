@@ -47,6 +47,7 @@ class Notify extends \Codeko\Redsys\Controller\Index
             $terminal_orig = $this->getHelper()->getConfigData('terminal');
             $moneda_orig = $this->getHelper()->getConfigData('currency');
             $tipo_trans_orig = $this->getHelper()->getConfigData('tipo_transaccion');
+            
             if($tipo_trans_orig === 'authorize') {
                 $tipo_trans_orig = 1;
             } else  {
@@ -76,6 +77,8 @@ class Notify extends \Codeko\Redsys\Controller\Index
             $values_val['tipo_trans_orig'] = $tipo_trans_orig;
             $values_val['terminal'] = $terminal;
             $values_val['terminal_orig'] = $terminal_orig;
+            
+            $this->getHelper()->log($id_log . " -- " . "Pedido: " . $pedido . " Transacción: " . $id_trans . " - " . $fecha . " " . $hora);
 
             $validate = $this->getValidator()->validate($values_val);
             if ($validate === true) {
@@ -90,6 +93,7 @@ class Notify extends \Codeko\Redsys\Controller\Index
                      */
                     //Id pedido
                     $this->getHelper()->log($id_log . " - Order increment id " . $order_id);
+                    /** var \Magento\Sales\Model\Order $order **/
                     $order = $this->getOrderFactory()->create();
                     $order->loadByIncrementId($order_id);
                     $transaction_amount = number_format($order->getBaseGrandTotal(), 2, '', '');
@@ -97,12 +101,14 @@ class Notify extends \Codeko\Redsys\Controller\Index
                     if ($amountOrig != $total) {
                         $this->getHelper()->log($id_log . " -- " . "El importe total no coincide.");
                         // Diferente importe
-                        $state = 'new';
+                        $state = 'canceled';
                         $status = 'canceled';
                         $comment = 'Redsys ha actualizado el estado del pedido con el valor "' . $status . '"';
                         $isCustomerNotified = true;
-                        $order->setState($state, $status, $comment, $isCustomerNotified);
-                        $order->registerCancellation("")->save();
+                        $order->setStatus($status);
+                        $order->setState($state);
+                        $order->addStatusHistoryComment($comment, $status);
+                        $order->registerCancellation("");
                         $order->save();
                         $this->getHelper()->log($id_log . " -- " .
                             "El pedido con ID de carrito " . $order_id . " es inválido.");
@@ -111,45 +117,36 @@ class Notify extends \Codeko\Redsys\Controller\Index
                         if (!$order->canInvoice()) {
                             $order->addStatusHistoryComment('Redsys, imposible generar Factura.', false);
                             $order->save();
-                        }
-                        $invoice = $this->getInvoiceService()->prepareInvoice($order);
-                        $invoice->register();
-                        $invoice->save();
-                        $transaction_save = $this->getTransaction()->addObject(
-                            $invoice
-                        )->addObject(
-                            $invoice->getOrder()
-                        );
-                        $transaction_save->save();
-                        $this->getInvoiceSender()->send($invoice);
-                        //send notification code
-                        $order->addStatusHistoryComment(
-                            __('Notified customer about invoice #%1.', $invoice->getId())
-                        )
-                            ->setIsCustomerNotified(true)
-                            ->save();
+                        } else {
+                            $invoice = $this->getInvoiceService()->prepareInvoice($order);
+                            $invoice->register();
+                            $invoice->save();
+                            $transaction_save = $this->getTransaction()->addObject(
+                                $invoice
+                            )->addObject(
+                                $invoice->getOrder()
+                            );
+                            $transaction_save->save();
+                            $this->getInvoiceSender()->send($invoice);
+                            //send notification code
+                            $order->addStatusHistoryComment(
+                                __('Notified customer about invoice #%1.', $invoice->getId())
+                            )
+                                ->setIsCustomerNotified(true)
+                                ->save();
 
-                        /**
-                         * Tendremos que revisar el envío de emails a la hora de crear el pedido.
-                         */
-                        
-                        /**
-                         * Email al cliente
-                         * $order->sendNewOrderEmail();
-                         * $this->getHelper()->log("Pedido: $order_id se ha enviado correctamente");
-                         */
-                        
-                        //Se actualiza el pedido
-                        $state = 'new';
-                        $status = 'processing';
-                        $comment = 'Redsys ha actualizado el estado del pedido con el valor "' . $status . '"';
-                        $isCustomerNotified = true;
-                        $order->setState($state, $status, $comment, $isCustomerNotified);
-                        $order->save();
-                        $this->getHelper()->log($id_log . " -- " . "El pedido con ID de carrito " .
-                            $order_id . " es válido y se ha registrado correctamente.");
-                        $this->getCheckoutSession()->setQuoteId($order->getQuoteId());
-                        $this->getCheckoutSession()->getQuote()->setIsActive(false)->save();
+                            //Se actualiza el pedido
+                            $state = 'processing';
+                            $status = 'processing';
+                            $comment = 'Redsys ha actualizado el estado del pedido con el valor "' . $status . '"';
+                            $isCustomerNotified = true;
+                            $order->setState($state, $status, $comment, $isCustomerNotified);
+                            $order->save();
+                            $this->getHelper()->log($id_log . " -- " . "El pedido con ID de carrito " .
+                                $order_id . " es válido y se ha registrado correctamente.");
+                            $this->getCheckoutSession()->setQuoteId($order->getQuoteId());
+                            $this->getCheckoutSession()->getQuote()->setIsActive(false)->save();
+                        }
                     } catch (\Exception $e) {
                         $order->addStatusHistoryComment('Redsys: Exception message: ' . $e->getMessage(), false);
                         $order->save();
@@ -159,25 +156,29 @@ class Notify extends \Codeko\Redsys\Controller\Index
                     $this->getHelper()->log($id_log . " - Pago no aceptado");
                     $order = $this->getOrderFactory()->create();
                     $order->loadByIncrementId($order_id);
-                    $state = 'new';
+                    $state = 'canceled';
                     $status = 'canceled';
                     $comment = 'Redsys ha actualizado el estado del pedido con el valor "' . $status . '"';
                     $this->getHelper()->log($id_log . " - Actualizado el estado del pedido con el valor " . $status);
                     $isCustomerNotified = true;
-                    $order->setState($state, $status, $comment, $isCustomerNotified);
-                    $order->registerCancellation("")->save();
+                    $order->setStatus($status);
+                    $order->setState($state);
+                    $order->addStatusHistoryComment($comment, $status);
+                    $order->registerCancellation("");
                     $order->save();
                 }
             } else {
                 $this->getHelper()->log($id_log . " - Validaciones NO superadas");
                 $this->getHelper()->log($id_log . implode(' | ', $validate));
                 $order->loadByIncrementId($order_id);
-                $state = 'new';
+                $state = 'canceled';
                 $status = 'canceled';
                 $comment = 'Redsys ha actualizado el estado del pedido con el valor "' . $status . '"';
                 $isCustomerNotified = true;
-                $order->setState($state, $status, $comment, $isCustomerNotified);
-                $order->registerCancellation("")->save();
+                $order->setStatus($status);
+                $order->setState($state);
+                $order->addStatusHistoryComment($comment, $status);
+                $order->registerCancellation("");
                 $order->save();
             }
         } else {

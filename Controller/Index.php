@@ -49,9 +49,14 @@ abstract class Index extends \Magento\Framework\App\Action\Action
     private $utilities;
 
     /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
+     * @var \Magento\Sales\Model\OrderRepository
      */
     private $order_repository;
+    
+    /**
+     * @var \Magento\Sales\Model\Order\InvoiceRepository
+     */
+    private $invoice_repository;
 
     /**
      * @var \Magento\Sales\Model\Service\InvoiceService
@@ -112,6 +117,11 @@ abstract class Index extends \Magento\Framework\App\Action\Action
     {
         return $this->order_repository;
     }
+    
+    public function getInvoiceRepository()
+    {
+        return $this->invoice_repository;
+    }
 
     public function getInvoiceService()
     {
@@ -168,9 +178,14 @@ abstract class Index extends \Magento\Framework\App\Action\Action
         $this->utilities = $utilities;
     }
 
-    public function setOrderRepository(\Magento\Sales\Api\OrderRepositoryInterface $order_repository)
+    public function setOrderRepository(\Magento\Sales\Model\OrderRepository $order_repository)
     {
         $this->order_repository = $order_repository;
+    }
+    
+    public function setInvoiceRepository(\Magento\Sales\Model\Order\InvoiceRepository $invoice_repository)
+    {
+        $this->invoice_repository = $invoice_repository;
     }
 
     public function setInvoiceService(\Magento\Sales\Model\Service\InvoiceService $invoice_service)
@@ -194,16 +209,16 @@ abstract class Index extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * @param \Magento\Framework\App\Action\Context                 $context
-     * @param \Magento\Checkout\Model\Session                       $checkout_session
-     * @param \Magento\Sales\Model\OrderFactory                     $order_factory
-     * @param \Magento\Framework\App\ObjectManagerFactory           $object_factory
-     * @param \Magento\Customer\Model\Session                       $customer_session
-     * @param \Magento\Store\Model\StoreManagerInterface            $store_manager
-     * @param \Magento\Sales\Model\Service\InvoiceService           $invoice_service
-     * @param \Magento\Framework\DB\Transaction                     $transaction
-     * @param \Magento\Sales\Model\Order\Email\Sender\InvoiceSender
-     * @param \Magento\Framework\App\Request\Http
+     * 
+     * @param \Magento\Framework\App\Action\Context $context
+     * @param \Magento\Sales\Model\OrderFactory $order_factory
+     * @param \Magento\Framework\App\ObjectManagerFactory $object_factory
+     * @param \Magento\Store\Model\StoreManagerInterface $store_manager
+     * @param \Magento\Sales\Model\Service\InvoiceService $invoice_service
+     * @param \Magento\Framework\DB\Transaction $transaction
+     * @param \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoice_sender
+     * @param \Magento\Sales\Model\OrderRepository $order_repository
+     * @param \Magento\Sales\Model\Order\InvoiceRepository $invoice_repository
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
@@ -213,12 +228,14 @@ abstract class Index extends \Magento\Framework\App\Action\Action
         \Magento\Sales\Model\Service\InvoiceService $invoice_service,
         \Magento\Framework\DB\Transaction $transaction,
         \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoice_sender,
-        \Magento\Sales\Model\OrderRepository $order_repository
+        \Magento\Sales\Model\OrderRepository $order_repository,
+        \Magento\Sales\Model\Order\InvoiceRepository $invoice_repository
     ) {
     
         parent::__construct($context);
         $this->setOrderFactory($order_factory);
         $this->setOrderRepository($order_repository);
+        $this->setInvoiceRepository($invoice_repository);
         $this->setStoreManager($store_manager);
         $this->setInvoiceService($invoice_service);
         $this->setInvoiceSender($invoice_sender);

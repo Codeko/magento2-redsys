@@ -14,7 +14,7 @@
                 <active>0</active>
                 <order_status>payment_review</order_status>
                 <title>Redsys</title>
-                <payment_action>authorize_capture</payment_action>
+                <payment_action>authorize</payment_action>
                 <currency>EUR</currency>
                 <tipo_transaccion>0</tipo_transaccion>
             </redsys>

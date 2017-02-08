@@ -29,15 +29,6 @@ class Redsys extends \Magento\Payment\Model\Method\AbstractMethod
         $this->_canCapture = true;
     }
     
-    public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
-    {
-        if (!$this->canCapture()) {
-            throw new \Magento\Framework\Exception\LocalizedException(__('The capture action is not available.'));
-        }
-        $payment->setIsTransactionPending(true);
-        return $this;
-    }
-    
     public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         if (!$this->canAuthorize()) {
