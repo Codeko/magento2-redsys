@@ -127,6 +127,7 @@ class Notify extends \Codeko\Redsys\Controller\Index {
                         $this->changeStatusOrder($order, 'processing', 'processing', $id_log);
                         $this->getHelper()->log($id_log . " - " . "El pedido con ID de carrito " .
                             $order_id . " es válido y se ha registrado correctamente.");
+                        $this->addTransaction($order, $this->getUtilities()->getParameters());
                         $this->deactiveCart($order);
                     } catch (\Exception $e) {
                         $this->getHelper()->log('Error en notificación desde Redsys ' . $e->getMessage());
@@ -154,6 +155,25 @@ class Notify extends \Codeko\Redsys\Controller\Index {
             $quote->setIsActive(false);
             $quote->setReservedOrderId($order->getIncrementId());
             $quote->save();
+        }
+    }
+
+    private function addTransaction(\Magento\Sales\Model\Order $order, $data_trans) {
+        $facturar = $this->getHelper()->getConfigData('facturar');
+        if (!$facturar) {
+            $payment = $order->getPayment();
+            if (!empty($payment)) {
+                $datetime = new \DateTime();
+                $parent_trans_id = 'Redsys_Payment';
+                $payment->setTransactionId(htmlentities('Redsys_Response_' . $datetime->getTimestamp()));
+                $payment->setParentTransactionId($parent_trans_id);
+                $payment->setTransactionAdditionalInfo(\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS, $data_trans);
+                $payment->setIsTransactionClosed(true);
+                $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE);
+                $payment->save();
+                $order->setPayment($payment);
+                $order->save();
+            }
         }
     }
 
