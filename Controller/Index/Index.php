@@ -28,6 +28,16 @@ class Index extends \Codeko\Redsys\Controller\Index
         if (!empty($order_id)) {
             $_order = $this->getOrderFactory()->create();
             $_order->loadByIncrementId($order_id);
+            
+            // Activamos carrito en el caso de que esté configurado con la opción de mantener carrito
+            $mantener_carrito = $this->getHelper()->getConfigData('mantener_carrito');
+            if($mantener_carrito) {
+                $quote = $this->getQuoteFactory()->create()->load($_order->getQuoteId());
+                $quote->setIsActive(true);
+                $quote->setReservedOrderId(null);
+                $quote->save();
+                $this->getCheckoutSession()->setQuoteId($_order->getQuoteId());
+            }
 
             // Datos del cliente
             $customer = $this->getCustomerSession()->getCustomer();

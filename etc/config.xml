@@ -17,6 +17,8 @@
                 <payment_action>authorize</payment_action>
                 <currency>EUR</currency>
                 <tipo_transaccion>0</tipo_transaccion>
+                <facturar>1</facturar>
+                <mantener_carrito>1</mantener_carrito>
             </redsys>
         </payment>
     </default>

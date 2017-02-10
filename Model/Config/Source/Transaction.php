@@ -23,8 +23,12 @@ class Transaction implements OptionSourceInterface
         $options = [];
         $options[] = [
             'label' => __('Autorización'),
-            'value' => 'authorize_capture',
+            'value' => 0,
         ];
+//        $options[] = [
+//            'label' => __('Preautorización'),
+//            'value' => 1,
+//        ];
         return $options;
     }
 }
