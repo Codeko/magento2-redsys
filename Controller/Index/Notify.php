@@ -4,12 +4,14 @@ namespace Codeko\Redsys\Controller\Index;
 
 use Magento\Framework\Controller\ResultFactory;
 
-class Notify extends \Codeko\Redsys\Controller\Index {
+class Notify extends \Codeko\Redsys\Controller\Index
+{
 
     /**
      * Separar función execute en funciones para mejorar compresión y usabilidad.
      */
-    public function execute() {
+    public function execute()
+    {
         $id_log = $this->getUtilities()->generateIdLog();
         $this->getHelper()->log($id_log . " - " . "Notificando desde Redsys ");
 
@@ -53,7 +55,6 @@ class Notify extends \Codeko\Redsys\Controller\Index {
             } else {
                 $tipo_trans_orig = 0;
             }
-
 
             $moneda_orig = $this->getUtilities()->getMonedaTpv($moneda_orig);
 
@@ -103,7 +104,7 @@ class Notify extends \Codeko\Redsys\Controller\Index {
                         if ($facturar && !$order->canInvoice()) {
                             $order->addStatusHistoryComment('Redsys, imposible generar Factura.', false);
                             $order->save();
-                        } else if ($facturar) {
+                        } elseif ($facturar) {
                             $invoice = $this->getInvoiceService()->prepareInvoice($order);
                             $invoice->register();
                             $invoice->capture();
@@ -148,7 +149,8 @@ class Notify extends \Codeko\Redsys\Controller\Index {
         }
     }
 
-    private function deactiveCart(\Magento\Sales\Model\Order $order) {
+    private function deactiveCart(\Magento\Sales\Model\Order $order)
+    {
         $mantener_carrito = $this->getHelper()->getConfigData('mantener_carrito');
         if ($mantener_carrito) {
             $quote = $this->getQuoteFactory()->create()->load($order->getQuoteId());
@@ -158,7 +160,8 @@ class Notify extends \Codeko\Redsys\Controller\Index {
         }
     }
 
-    private function addTransaction(\Magento\Sales\Model\Order $order, $data_trans) {
+    private function addTransaction(\Magento\Sales\Model\Order $order, $data_trans)
+    {
         $facturar = $this->getHelper()->getConfigData('facturar');
         if (!$facturar) {
             $payment = $order->getPayment();
@@ -177,16 +180,16 @@ class Notify extends \Codeko\Redsys\Controller\Index {
             }
         } else {
             $transactions = $this->getTransSearch()->create()->addOrderIdFilter($order->getId());
-            if(!empty($transactions)) {
+            if (!empty($transactions)) {
                 $this->getHelper()->log("Modificando transacción capture ...");
                 /**
                  * @var \Magento\Sales\Model\Order\Payment\Transaction $trans_item
                  */
                 foreach ($transactions->getItems() as $trans_item) {
-                    if($trans_item->getTxnType() === \Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE) {
+                    if ($trans_item->getTxnType() === \Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE) {
                         $res = $data_trans;
                         $additional_info = $trans_item->getAdditionalInformation(\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS);
-                        if(!empty($additional_info) && is_array($additional_info)){
+                        if (!empty($additional_info) && is_array($additional_info)) {
                             $res = array_merge($additional_info, $data_trans);
                         }
                         $trans_item->setAdditionalInformation(\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS, $res);
@@ -197,12 +200,14 @@ class Notify extends \Codeko\Redsys\Controller\Index {
         }
     }
 
-    private function getOrder($order_id) {
+    private function getOrder($order_id)
+    {
         $order = $this->getOrderFactory()->create();
         return $order->loadByIncrementId($order_id);
     }
 
-    private function changeStatusOrder($order, $status, $state, $id_log = 0, $comment = '') {
+    private function changeStatusOrder($order, $status, $state, $id_log = 0, $comment = '')
+    {
         $msg = "Redsys ha actualizado el estado del pedido con el valor " . strtoupper($status);
         $this->getHelper()->log($id_log . " - " . $msg);
         $order->setStatus($status);
@@ -216,5 +221,4 @@ class Notify extends \Codeko\Redsys\Controller\Index {
         }
         $order->save();
     }
-
 }

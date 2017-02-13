@@ -6,9 +6,11 @@ use Magento\Framework\Controller\ResultFactory;
 use Codeko\Redsys\Model\Api\RedsysAPI;
 use Codeko\Redsys\Model\Api\RedsysLibrary;
 
-class Index extends \Codeko\Redsys\Controller\Index {
+class Index extends \Codeko\Redsys\Controller\Index
+{
 
-    public function execute() {
+    public function execute()
+    {
         $this->getHelper()->log('Pago Redsys');
 
         //Obtenemos los valores de la configuración del módulo
@@ -124,7 +126,8 @@ class Index extends \Codeko\Redsys\Controller\Index {
         }
     }
 
-    private function addTransaction(\Magento\Sales\Model\Order $order, $data_trans) {
+    private function addTransaction(\Magento\Sales\Model\Order $order, $data_trans)
+    {
         $payment = $order->getPayment();
         if (!empty($payment)) {
             $datetime = new \DateTime();
@@ -146,5 +149,4 @@ class Index extends \Codeko\Redsys\Controller\Index {
             $order->save();
         }
     }
-
 }

@@ -93,11 +93,13 @@ abstract class Index extends \Magento\Framework\App\Action\Action
      */
     private $trans_search;
     
-    function getTransSearch() {
+    public function getTransSearch()
+    {
         return $this->trans_search;
     }
 
-    function setTransSearch(\Magento\Sales\Api\Data\TransactionSearchResultInterfaceFactory $trans_search) {
+    public function setTransSearch(\Magento\Sales\Api\Data\TransactionSearchResultInterfaceFactory $trans_search)
+    {
         $this->trans_search = $trans_search;
     }
 
@@ -241,16 +243,17 @@ abstract class Index extends \Magento\Framework\App\Action\Action
         $this->quote_repository = $quote_repository;
     }
     
-    function getQuoteFactory() {
+    public function getQuoteFactory()
+    {
         return $this->quote_factory;
     }
 
-    function setQuoteFactory(\Magento\Quote\Model\QuoteFactory $quote_factory) {
+    public function setQuoteFactory(\Magento\Quote\Model\QuoteFactory $quote_factory)
+    {
         $this->quote_factory = $quote_factory;
     }
 
     /**
-     * 
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Sales\Model\OrderFactory $order_factory
      * @param \Magento\Framework\App\ObjectManagerFactory $object_factory

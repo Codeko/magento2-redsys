@@ -27,7 +27,8 @@ class Utilities extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->vars_pay[$key];
     }
     
-    public function getParameters() {
+    public function getParameters()
+    {
         return $this->vars_pay;
     }
 
