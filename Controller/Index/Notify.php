@@ -163,6 +163,7 @@ class Notify extends \Codeko\Redsys\Controller\Index {
         if (!$facturar) {
             $payment = $order->getPayment();
             if (!empty($payment)) {
+                $this->getHelper()->log("Creando transacción capture ...");
                 $datetime = new \DateTime();
                 $parent_trans_id = 'Redsys_Payment';
                 $payment->setTransactionId(htmlentities('Redsys_Response_' . $datetime->getTimestamp()));
@@ -173,6 +174,25 @@ class Notify extends \Codeko\Redsys\Controller\Index {
                 $payment->save();
                 $order->setPayment($payment);
                 $order->save();
+            }
+        } else {
+            $transactions = $this->getTransSearch()->create()->addOrderIdFilter($order->getId());
+            if(!empty($transactions)) {
+                $this->getHelper()->log("Modificando transacción capture ...");
+                /**
+                 * @var \Magento\Sales\Model\Order\Payment\Transaction $trans_item
+                 */
+                foreach ($transactions->getItems() as $trans_item) {
+                    if($trans_item->getTxnType() === \Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE) {
+                        $res = $data_trans;
+                        $additional_info = $trans_item->getAdditionalInformation(\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS);
+                        if(!empty($additional_info) && is_array($additional_info)){
+                            $res = array_merge($additional_info, $data_trans);
+                        }
+                        $trans_item->setAdditionalInformation(\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS, $res);
+                        $trans_item->save();
+                    }
+                }
             }
         }
     }

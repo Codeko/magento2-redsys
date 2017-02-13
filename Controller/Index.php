@@ -88,6 +88,18 @@ abstract class Index extends \Magento\Framework\App\Action\Action
      */
     private $quote_factory;
     
+    /**
+     * @var \Magento\Sales\Api\Data\TransactionSearchResultInterfaceFactory $trans_search
+     */
+    private $trans_search;
+    
+    function getTransSearch() {
+        return $this->trans_search;
+    }
+
+    function setTransSearch(\Magento\Sales\Api\Data\TransactionSearchResultInterfaceFactory $trans_search) {
+        $this->trans_search = $trans_search;
+    }
 
     public function getCheckoutSession()
     {
@@ -250,6 +262,7 @@ abstract class Index extends \Magento\Framework\App\Action\Action
      * @param \Magento\Sales\Model\Order\InvoiceRepository $invoice_repository
      * @param \Magento\Quote\Api\CartRepositoryInterface $quote_repository
      * @param \Magento\Quote\Model\QuoteFactory $quote_factory
+     * @param \Magento\Sales\Api\Data\TransactionSearchResultInterfaceFactory $trans_search
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
@@ -262,7 +275,8 @@ abstract class Index extends \Magento\Framework\App\Action\Action
         \Magento\Sales\Model\OrderRepository $order_repository,
         \Magento\Sales\Model\Order\InvoiceRepository $invoice_repository,
         \Magento\Quote\Api\CartRepositoryInterface $quote_repository,
-        \Magento\Quote\Model\QuoteFactory $quote_factory
+        \Magento\Quote\Model\QuoteFactory $quote_factory,
+        \Magento\Sales\Api\Data\TransactionSearchResultInterfaceFactory $trans_search
     ) {
     
         parent::__construct($context);
@@ -284,5 +298,6 @@ abstract class Index extends \Magento\Framework\App\Action\Action
         $this->setRequest($object_manager->get(\Magento\Framework\App\Request\Http::class));
         $this->setQuoteRepository($quote_repository);
         $this->setQuoteFactory($quote_factory);
+        $this->setTransSearch($trans_search);
     }
 }
