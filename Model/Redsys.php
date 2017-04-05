@@ -45,6 +45,7 @@ class Redsys extends \Magento\Payment\Model\Method\AbstractMethod
 
         $this->_canAuthorize = true;
         $this->_canCapture = true;
+        $this->_canReviewPayment = true;
     }
     
     public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
@@ -54,5 +55,17 @@ class Redsys extends \Magento\Payment\Model\Method\AbstractMethod
         }
         $payment->setIsTransactionPending(true);
         return $this;
+    }
+    
+    public function acceptPayment(\Magento\Payment\Model\InfoInterface $payment)
+    {
+        parent::acceptPayment($payment);
+        return true;
+    }
+    
+    public function denyPayment(\Magento\Payment\Model\InfoInterface $payment)
+    {
+        parent::denyPayment($payment);
+        return true;
     }
 }
