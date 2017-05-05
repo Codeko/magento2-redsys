@@ -1,6 +1,13 @@
 # Magento 2 Redsys Payments
 
+Developer: Codeko
+Website: http://codeko.com
+Contact: <mailto:codeko@codeko.com>
+
 Virtual POS integration for Spanish banks: allow your customers to pay with any credit card. A "must have" in any Spanish market oriented e-commerce. 
+
+We are experts in Magento 1 and Magento 2 among others. [Contact us](<mailto:codeko@codeko.com>) if you need a quality boost to your magento proyect. 
+
 
 ## Installation Disable Newsletter
 
