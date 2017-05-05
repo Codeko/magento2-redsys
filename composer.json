@@ -1,11 +1,11 @@
 {
-    "name": "codeko/redsys",
+    "name": "codeko/magento2-redsys",
     "description": "Redsys credit card Payment",
     "require": {
-        "php": "~5.5.0|~5.6.0|~7.0.0"
+        "php": "~7.0.0"
     },
     "type": "magento2-module",
-    "version": "3.0.3",
+    "version": "3.0.4",
     "license": [
         "AGPL-3.0"
     ],
