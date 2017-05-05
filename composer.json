@@ -1,6 +1,6 @@
 {
     "name": "codeko/magento2-redsys",
-    "description": "Redsys credit card Payment",
+    "description": "Magento 2 Redsys virtual POS extension",
     "require": {
         "php": "~7.0.0"
     },
