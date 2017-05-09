@@ -8,7 +8,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <section id="payment">
-            <group id="redsys" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="redsys" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Redsys</label>
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Enabled</label>
@@ -49,36 +49,17 @@
                     <label>Tipo transacción</label>
                     <source_model>Codeko\Redsys\Model\Config\Source\Transaction</source_model>
                 </field>
-                <field id="logactivo" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="facturar" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Crear factura</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="mantener_carrito" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Mantener carrito en pedidos Cancelados por Redsys</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="logactivo" translate="label" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Log activo</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="errorpago" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Mantener pedido si se produce un error</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="notif" translate="label" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Notificación HTTP(Inactivo no procesa pedido ni vacia el carrito)</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="ssl" translate="label" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Usar SSL en validación</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="error" translate="label" type="select" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>En caso de error, permite elegir otro medio de pago</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="idiomas" translate="label" type="select" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Activar idiomas del TPV</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="correo" translate="label" type="select" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Activar correo electrónico</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="mensaje" translate="label" type="textarea" sortOrder="170" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Contenido del mensaje al cliente</label>
                 </field>
                 <field id="allowspecific" translate="label" type="allowspecific" sortOrder="180" showInDefault="9" showInWebsite="1" showInStore="0">
                     <label>Payment From Applicable Countries</label>

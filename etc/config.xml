@@ -12,10 +12,13 @@
                 <model>Codeko\Redsys\Model\Redsys</model>
                 <debug>1</debug>
                 <active>0</active>
+                <order_status>payment_review</order_status>
                 <title>Redsys</title>
-                <payment_action>true</payment_action>
+                <payment_action>authorize</payment_action>
                 <currency>EUR</currency>
                 <tipo_transaccion>0</tipo_transaccion>
+                <facturar>1</facturar>
+                <mantener_carrito>1</mantener_carrito>
             </redsys>
         </payment>
     </default>

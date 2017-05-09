@@ -29,7 +29,7 @@ class Redsys extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-    
+
         parent::__construct(
             $context,
             $registry,
@@ -45,5 +45,27 @@ class Redsys extends \Magento\Payment\Model\Method\AbstractMethod
 
         $this->_canAuthorize = true;
         $this->_canCapture = true;
+        $this->_canReviewPayment = true;
+    }
+    
+    public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    {
+        if (!$this->canAuthorize()) {
+            throw new \Magento\Framework\Exception\LocalizedException(__('The authorize action is not available.'));
+        }
+        $payment->setIsTransactionPending(true);
+        return $this;
+    }
+    
+    public function acceptPayment(\Magento\Payment\Model\InfoInterface $payment)
+    {
+        parent::acceptPayment($payment);
+        return true;
+    }
+    
+    public function denyPayment(\Magento\Payment\Model\InfoInterface $payment)
+    {
+        parent::denyPayment($payment);
+        return true;
     }
 }

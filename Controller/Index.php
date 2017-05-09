@@ -49,9 +49,14 @@ abstract class Index extends \Magento\Framework\App\Action\Action
     private $utilities;
 
     /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
+     * @var \Magento\Sales\Model\OrderRepository
      */
     private $order_repository;
+    
+    /**
+     * @var \Magento\Sales\Model\Order\InvoiceRepository
+     */
+    private $invoice_repository;
 
     /**
      * @var \Magento\Sales\Model\Service\InvoiceService
@@ -72,6 +77,31 @@ abstract class Index extends \Magento\Framework\App\Action\Action
      * @var \Magento\Framework\App\Request\Http $request
      */
     private $request;
+    
+    /**
+     * @var \Magento\Quote\Api\CartRepositoryInterface $quote_repository
+     */
+    private $quote_repository;
+    
+    /**
+     * @var \Magento\Quote\Model\QuoteFactory $quote_factory
+     */
+    private $quote_factory;
+    
+    /**
+     * @var \Magento\Sales\Api\Data\TransactionSearchResultInterfaceFactory $trans_search
+     */
+    private $trans_search;
+    
+    public function getTransSearch()
+    {
+        return $this->trans_search;
+    }
+
+    public function setTransSearch(\Magento\Sales\Api\Data\TransactionSearchResultInterfaceFactory $trans_search)
+    {
+        $this->trans_search = $trans_search;
+    }
 
     public function getCheckoutSession()
     {
@@ -111,6 +141,16 @@ abstract class Index extends \Magento\Framework\App\Action\Action
     public function getOrderRepository()
     {
         return $this->order_repository;
+    }
+    
+    public function getInvoiceRepository()
+    {
+        return $this->invoice_repository;
+    }
+    
+    public function getQuoteRepository()
+    {
+        return $this->quote_repository;
     }
 
     public function getInvoiceService()
@@ -168,9 +208,14 @@ abstract class Index extends \Magento\Framework\App\Action\Action
         $this->utilities = $utilities;
     }
 
-    public function setOrderRepository(\Magento\Sales\Api\OrderRepositoryInterface $order_repository)
+    public function setOrderRepository(\Magento\Sales\Model\OrderRepository $order_repository)
     {
         $this->order_repository = $order_repository;
+    }
+    
+    public function setInvoiceRepository(\Magento\Sales\Model\Order\InvoiceRepository $invoice_repository)
+    {
+        $this->invoice_repository = $invoice_repository;
     }
 
     public function setInvoiceService(\Magento\Sales\Model\Service\InvoiceService $invoice_service)
@@ -192,18 +237,35 @@ abstract class Index extends \Magento\Framework\App\Action\Action
     {
         $this->request = $request;
     }
+    
+    public function setQuoteRepository(\Magento\Quote\Api\CartRepositoryInterface $quote_repository)
+    {
+        $this->quote_repository = $quote_repository;
+    }
+    
+    public function getQuoteFactory()
+    {
+        return $this->quote_factory;
+    }
+
+    public function setQuoteFactory(\Magento\Quote\Model\QuoteFactory $quote_factory)
+    {
+        $this->quote_factory = $quote_factory;
+    }
 
     /**
-     * @param \Magento\Framework\App\Action\Context                 $context
-     * @param \Magento\Checkout\Model\Session                       $checkout_session
-     * @param \Magento\Sales\Model\OrderFactory                     $order_factory
-     * @param \Magento\Framework\App\ObjectManagerFactory           $object_factory
-     * @param \Magento\Customer\Model\Session                       $customer_session
-     * @param \Magento\Store\Model\StoreManagerInterface            $store_manager
-     * @param \Magento\Sales\Model\Service\InvoiceService           $invoice_service
-     * @param \Magento\Framework\DB\Transaction                     $transaction
-     * @param \Magento\Sales\Model\Order\Email\Sender\InvoiceSender
-     * @param \Magento\Framework\App\Request\Http
+     * @param \Magento\Framework\App\Action\Context $context
+     * @param \Magento\Sales\Model\OrderFactory $order_factory
+     * @param \Magento\Framework\App\ObjectManagerFactory $object_factory
+     * @param \Magento\Store\Model\StoreManagerInterface $store_manager
+     * @param \Magento\Sales\Model\Service\InvoiceService $invoice_service
+     * @param \Magento\Framework\DB\Transaction $transaction
+     * @param \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoice_sender
+     * @param \Magento\Sales\Model\OrderRepository $order_repository
+     * @param \Magento\Sales\Model\Order\InvoiceRepository $invoice_repository
+     * @param \Magento\Quote\Api\CartRepositoryInterface $quote_repository
+     * @param \Magento\Quote\Model\QuoteFactory $quote_factory
+     * @param \Magento\Sales\Api\Data\TransactionSearchResultInterfaceFactory $trans_search
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
@@ -212,11 +274,18 @@ abstract class Index extends \Magento\Framework\App\Action\Action
         \Magento\Store\Model\StoreManagerInterface $store_manager,
         \Magento\Sales\Model\Service\InvoiceService $invoice_service,
         \Magento\Framework\DB\Transaction $transaction,
-        \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoice_sender
+        \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoice_sender,
+        \Magento\Sales\Model\OrderRepository $order_repository,
+        \Magento\Sales\Model\Order\InvoiceRepository $invoice_repository,
+        \Magento\Quote\Api\CartRepositoryInterface $quote_repository,
+        \Magento\Quote\Model\QuoteFactory $quote_factory,
+        \Magento\Sales\Api\Data\TransactionSearchResultInterfaceFactory $trans_search
     ) {
     
         parent::__construct($context);
         $this->setOrderFactory($order_factory);
+        $this->setOrderRepository($order_repository);
+        $this->setInvoiceRepository($invoice_repository);
         $this->setStoreManager($store_manager);
         $this->setInvoiceService($invoice_service);
         $this->setInvoiceSender($invoice_sender);
@@ -230,5 +299,8 @@ abstract class Index extends \Magento\Framework\App\Action\Action
         $this->setCheckoutSession($object_manager->create(\Magento\Checkout\Model\Session::class));
         $this->setCustomerSession($object_manager->create(\Magento\Customer\Model\Session::class));
         $this->setRequest($object_manager->get(\Magento\Framework\App\Request\Http::class));
+        $this->setQuoteRepository($quote_repository);
+        $this->setQuoteFactory($quote_factory);
+        $this->setTransSearch($trans_search);
     }
 }
