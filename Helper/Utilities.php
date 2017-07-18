@@ -203,14 +203,17 @@ class Utilities extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function createMerchantSignature($key)
     {
-        // Se decodifica la clave Base64
-        $key = $this->decodeBase64($key);
-        // Se genera el parámetro Ds_MerchantParameters
-        $ent = $this->createMerchantParameters();
-        // Se diversifica la clave con el Número de Pedido
-        $key = $this->encrypt3DES($this->getOrder(), $key);
-        // MAC256 del parámetro Ds_MerchantParameters
-        $res = $this->mac256($ent, $key);
+        $res = '';
+        if(strlen($key) === 32) {
+            // Se decodifica la clave Base64
+            $key = $this->decodeBase64($key);
+            // Se genera el parámetro Ds_MerchantParameters
+            $ent = $this->createMerchantParameters();
+            // Se diversifica la clave con el Número de Pedido
+            $key = $this->encrypt3DES($this->getOrder(), $key);
+            // MAC256 del parámetro Ds_MerchantParameters
+            $res = $this->mac256($ent, $key);
+        }
         // Se codifican los datos Base64
         return $this->encodeBase64($res);
     }
@@ -246,16 +249,19 @@ class Utilities extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function createMerchantSignatureNotif($key, $datos)
     {
-        // Se decodifica la clave Base64
-        $key = $this->decodeBase64($key);
-        // Se decodifican los datos Base64
-        $decodec = $this->base64UrlDecode($datos);
-        // Los datos decodificados se pasan al array de datos
-        $this->stringToArray($decodec);
-        // Se diversifica la clave con el Número de Pedido
-        $key = $this->encrypt3DES($this->getOrderNotif(), $key);
-        // MAC256 del parámetro Ds_Parameters que envía Redsys
-        $res = $this->mac256($datos, $key);
+        $res = '';
+        if(strlen($key) === 32) {
+            // Se decodifica la clave Base64
+            $key = $this->decodeBase64($key);
+            // Se decodifican los datos Base64
+            $decodec = $this->base64UrlDecode($datos);
+            // Los datos decodificados se pasan al array de datos
+            $this->stringToArray($decodec);
+            // Se diversifica la clave con el Número de Pedido
+            $key = $this->encrypt3DES($this->getOrderNotif(), $key);
+            // MAC256 del parámetro Ds_Parameters que envía Redsys
+            $res = $this->mac256($datos, $key);
+        }
         // Se codifican los datos Base64
         return $this->base64UrlEncode($res);
     }

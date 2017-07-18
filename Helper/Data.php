@@ -2,8 +2,6 @@
 
 namespace Codeko\Redsys\Helper;
 
-use Symfony\Component\Console\Output\OutputInterface;
-
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
 

@@ -2,10 +2,6 @@
 
 namespace Codeko\Redsys\Controller\Index;
 
-use Magento\Framework\Controller\ResultFactory;
-use Codeko\Redsys\Model\Api\RedsysAPI;
-use Codeko\Redsys\Model\Api\RedsysLibrary;
-
 class Index extends \Codeko\Redsys\Controller\Index
 {
 

@@ -2,8 +2,6 @@
 
 namespace Codeko\Redsys\Controller\Index;
 
-use Magento\Framework\Controller\ResultFactory;
-
 class Notify extends \Codeko\Redsys\Controller\Index
 {
 

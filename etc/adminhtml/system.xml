@@ -37,6 +37,7 @@
                 </field>
                 <field id="clave256" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Clave 256</label>
+                    <validate>validate-32-length</validate>
                 </field>
                 <field id="terminal" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Terminal</label>
