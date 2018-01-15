@@ -20,13 +20,13 @@ We are experts in Magento 1 and Magento 2 among others. [Contact us](<mailto:cod
 
 ### Using Composer
 
-```
-composer require codeko/magento2-redsys
+```cli
+composer require codeko/redsys
 ```
 
 ## Enable extension
 
-```
+```cli
 php bin/magento module:enable Codeko_Redsys
 php bin/magento setup:upgrade
 php bin/magento setup:di:compile
