@@ -48,11 +48,22 @@ class Utilities extends \Magento\Framework\App\Helper\AbstractHelper
     private function encrypt3DES($message, $key)
     {
         // Se establece un IV por defecto
-        $bytes = [0, 0, 0, 0, 0, 0, 0, 0];
-        $iv = implode(array_map("chr", $bytes));
+        $bytes = array(0,0,0,0,0,0,0,0); //byte [] IV = {0, 0, 0, 0, 0, 0, 0, 0}
+        $iv = implode(array_map("chr", $bytes)); //PHP 4 >= 4.0.2
+
         // Se cifra
-        $ciphertext = mcrypt_encrypt(MCRYPT_3DES, $key, $message, MCRYPT_MODE_CBC, $iv);
-        return $ciphertext;
+        if(phpversion() < 7){
+            
+            $ciphertext = mcrypt_encrypt(MCRYPT_3DES, $key, $message, MCRYPT_MODE_CBC, $iv); //PHP 4 >= 4.0.2
+            return $ciphertext;
+            
+        }else{
+            
+            $long = ceil(strlen($message) / 16) * 16;
+            $ciphertext = substr(openssl_encrypt($message . str_repeat("\0", $long - strlen($message)), 'des-ede3-cbc', $key, OPENSSL_RAW_DATA, $iv), 0, $long);
+            
+            return $ciphertext;
+        }
     }
 
     private function base64UrlEncode($input)
