@@ -45,14 +45,9 @@ class Utilities extends \Magento\Framework\App\Helper\AbstractHelper
      * @param  type $key
      * @return type
      */
-    private function encrypt3DES($message, $key)
-    {
-        // Se establece un IV por defecto
-        $bytes = [0, 0, 0, 0, 0, 0, 0, 0];
-        $iv = implode(array_map("chr", $bytes));
-        // Se cifra
-        $ciphertext = mcrypt_encrypt(MCRYPT_3DES, $key, $message, MCRYPT_MODE_CBC, $iv);
-        return $ciphertext;
+    private function encrypt3DES($message, $key) {
+        $l = ceil(strlen($message) / 8) * 8;
+        return substr(openssl_encrypt($message . str_repeat("\0", $l - strlen($message)), 'des-ede3-cbc', $key, OPENSSL_RAW_DATA, "\0\0\0\0\0\0\0\0"), 0, $l);
     }
 
     private function base64UrlEncode($input)
