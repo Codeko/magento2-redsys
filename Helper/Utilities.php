@@ -44,9 +44,7 @@ class Utilities extends \Magento\Framework\App\Helper\AbstractHelper
      * @param  type $key
      * @return type
      */
-    protected function encrypt3DES($message, $key)
-    {
-
+    private function encrypt3DES($message, $key) {
         $l = ceil(strlen($message) / 8) * 8;
 
         return substr(openssl_encrypt($message . str_repeat("\0", $l - strlen($message)), 'des-ede3-cbc', $key, OPENSSL_RAW_DATA, "\0\0\0\0\0\0\0\0"), 0, $l);
