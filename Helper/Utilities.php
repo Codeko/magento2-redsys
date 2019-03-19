@@ -5,9 +5,8 @@ namespace Codeko\Redsys\Helper;
 class Utilities extends \Magento\Framework\App\Helper\AbstractHelper
 {
     
-    private $vars_pay = null;
-    
-    private $ri = null;
+    protected $vars_pay = null;
+    protected $ri = null;
     
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
@@ -47,32 +46,33 @@ class Utilities extends \Magento\Framework\App\Helper\AbstractHelper
      */
     private function encrypt3DES($message, $key) {
         $l = ceil(strlen($message) / 8) * 8;
+
         return substr(openssl_encrypt($message . str_repeat("\0", $l - strlen($message)), 'des-ede3-cbc', $key, OPENSSL_RAW_DATA, "\0\0\0\0\0\0\0\0"), 0, $l);
     }
 
-    private function base64UrlEncode($input)
+    protected function base64UrlEncode($input)
     {
         return strtr(base64_encode($input), '+/', '-_');
     }
 
-    private function encodeBase64($data)
+    protected function encodeBase64($data)
     {
         $data = base64_encode($data);
         return $data;
     }
 
-    private function base64UrlDecode($input)
+    protected function base64UrlDecode($input)
     {
         return base64_decode(strtr($input, '-_', '+/'));
     }
 
-    private function decodeBase64($data)
+    protected function decodeBase64($data)
     {
         $data = base64_decode($data);
         return $data;
     }
 
-    private function mac256($ent, $key)
+    protected function mac256($ent, $key)
     {
         $res = hash_hmac('sha256', $ent, $key, true);
         return $res;

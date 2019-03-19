@@ -57,6 +57,11 @@ class Notify extends \Codeko\Redsys\Controller\Index
             $moneda_orig = $this->getUtilities()->getMonedaTpv($moneda_orig);
 
             $order_id = substr($pedido, 3);
+
+            if(strlen($pedido) == 12){
+                $order_id = substr($pedido, 2);
+            }
+
             // Limpiamos 0 por delante agregados para pasarlo como parámetro
             $pedido = ltrim($pedido, '0');
             // Inicializamos el valor del status del pedido
@@ -158,7 +163,7 @@ class Notify extends \Codeko\Redsys\Controller\Index
         }
     }
 
-    private function addTransaction(\Magento\Sales\Model\Order $order, $data_trans)
+    protected function addTransaction(\Magento\Sales\Model\Order $order, $data_trans)
     {
         $facturar = $this->getHelper()->getConfigData('facturar');
         if (!$facturar) {
@@ -198,13 +203,13 @@ class Notify extends \Codeko\Redsys\Controller\Index
         }
     }
 
-    private function getOrder($order_id)
+    protected function getOrder($order_id)
     {
         $order = $this->getOrderFactory()->create();
         return $order->loadByIncrementId($order_id);
     }
 
-    private function changeStatusOrder($order, $status, $state, $id_log = 0, $comment = '')
+    protected function changeStatusOrder($order, $status, $state, $id_log = 0, $comment = '')
     {
         $msg = "Redsys ha actualizado el estado del pedido con el valor " . strtoupper($status);
         $this->getHelper()->log($id_log . " - " . $msg);
