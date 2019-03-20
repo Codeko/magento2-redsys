@@ -1,5 +1,15 @@
 # Magento 2 Redsys Payments
 
+﻿[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)][1]
+﻿[![Build Status](https://travis-ci.org/codeko/magento2-redsys.svg?branch=master)](https://travis-ci.org/codeko/magento2-redsys)
+﻿[![Latest Stable Version](https://poser.pugx.org/codeko/magento2-redsys/v/stable.png)](https://packagist.org/packages/codeko/magento2-redsys)
+﻿[![Latest Unstable Version](https://poser.pugx.org/codeko/magento2-redsys/v/unstable)](https://packagist.org/packages/codeko/magento2-redsys)
+﻿[![License](https://poser.pugx.org/codeko/magento2-redsys/license)](https://packagist.org/packages/codeko/magento2-redsys)
+ 
+﻿[![Total Downloads](https://poser.pugx.org/codeko/magento2-redsys/downloads.png)](https://packagist.org/packages/codeko/magento2-redsys)
+﻿[![Monthly Downloads](https://poser.pugx.org/codeko/magento2-redsys/d/monthly)](https://packagist.org/packages/codeko/magento2-redsys)
+﻿[![Daily Downloads](https://poser.pugx.org/codeko/magento2-redsys/d/daily)](https://packagist.org/packages/codeko/magento2-redsys)
+ 
 Developer: Codeko
 Website: http://codeko.com
 Contact: <mailto:codeko@codeko.com>
@@ -181,3 +191,4 @@ The Bank will email you all information. That information will be used on Redsys
  - Bankia Banca Privada
  - Entre2 Servicios Financieros
 
+ [1]: https://github.com/codeko/magento2-redsys/issues?utf8=%E2%9C%93&q=is%3Aopen%20is%3Aissue
