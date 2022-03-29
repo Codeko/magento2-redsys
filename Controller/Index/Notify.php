@@ -2,7 +2,10 @@
 
 namespace Codeko\Redsys\Controller\Index;
 
-class Notify extends \Codeko\Redsys\Controller\Index
+use Magento\Framework\App\Request\InvalidRequestException;
+use Magento\Framework\App\RequestInterface;
+
+class Notify extends \Codeko\Redsys\Controller\Index implements \Magento\Framework\App\CsrfAwareActionInterface
 {
 
     /**
@@ -223,5 +226,16 @@ class Notify extends \Codeko\Redsys\Controller\Index
             $order->registerCancellation("");
         }
         $order->save();
+    }
+    
+    public function createCsrfValidationException(
+        RequestInterface $request
+    ): ?InvalidRequestException {
+        return null;
+    }
+
+    public function validateForCsrf(RequestInterface $request): ?bool
+    {
+        return true;
     }
 }
